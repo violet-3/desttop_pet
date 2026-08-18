@@ -271,6 +271,9 @@ class DesktopPet:
     def draw(self) -> None:
         """绘制当前帧到画布（不推进动画状态，可被缩放等事件立即调用）。"""
         cell = self.current_cell()
+        if self.walking and self.walk_dir < 0:
+            # 向左散步时镜像动画，让头朝向移动方向
+            cell = cell.transpose(Image.FLIP_LEFT_RIGHT)
         if self.scale != 1.0:
             cell = self.strip_green_edges(cell.resize(tuple(self.win_size), Image.LANCZOS))
         self.photo = ImageTk.PhotoImage(cell)
