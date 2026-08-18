@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GPT × DeepSeek Q版宠物｜QA 候选预览</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, "Microsoft YaHei", sans-serif; }
+    body { margin: 0; min-height: 100vh; color: #eef2ff; background: radial-gradient(circle at 25% 0%, #253760, #0a1020 58%); }
+    main { max-width: 1050px; margin: auto; padding: 32px 20px 56px; }
+    h1 { margin: 0 0 8px; font-size: clamp(25px, 4vw, 40px); }
+    .notice { color: #c3cee9; margin: 0 0 28px; }
+    .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    article { background: rgba(22, 32, 56, .84); border: 1px solid #50638d; border-radius: 20px; padding: 20px; box-shadow: 0 18px 48px rgba(0,0,0,.25); }
+    h2 { margin: 0 0 6px; } p { color: #bdc9e4; min-height: 2.8em; }
+    .stage { height: 280px; display:grid; place-items:center; overflow:hidden; border-radius:14px; background: linear-gradient(135deg,#e8f2ff,#d5e6ff 48%,#f6edff); }
+    .pet { width: 192px; height: 208px; background-repeat:no-repeat; image-rendering:auto; filter: drop-shadow(0 13px 8px rgba(19,35,73,.25)); }
+    .controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    button { background:#2d5aa4; color:white; border:0; border-radius:999px; padding:9px 12px; cursor:pointer; } button:hover, button.active { background:#4c82d8; }
+    .small { font-size:13px; color:#aab8d7; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>GPT × DeepSeek Q版宠物</h1>
+    <p class="notice">本地 QA 候选预览包：可切换工作、喝水、散步、睡觉、偷吃等状态。方向盲测尚未最终签发。</p>
+    <section class="grid" id="pets"></section>
+  </main>
+  <script>
+    const pets = [
+      { key:'luma', name:'Luma · GPT 宠物', text:'银白研究员。', atlas:'assets/luma-gpt.webp' },
+      { key:'mira', name:'Mira · DeepSeek 宠物', text:'深蓝海洋探索者。', atlas:'assets/mira-deepseek.webp' }
+    ];
+    const states = [['idle','休息',0,6],['walk','散步',1,8],['greet','招呼',3,4],['play','开心',4,5],['snack','偷吃',5,8],['drink','喝水',6,6],['work','工作',7,6],['review','完成',8,6]];
+    const cellW=192, cellH=208, cols=8;
+    const root=document.querySelector('#pets');
+    for (const pet of pets) {
+      let frame=0, active=0, timer;
+      const article=document.createElement('article');
+      article.innerHTML=`<h2>${pet.name}</h2><p>${pet.text}</p><div class="stage"><div class="pet"></div></div><div class="controls"></div><div class="small">精灵图：11 行 × 8 列，V2 格式</div>`;
+      const sprite=article.querySelector('.pet'), controls=article.querySelector('.controls');
+      sprite.style.backgroundImage=`url(${pet.atlas})`;
+      function draw(){ const [, ,row,count]=states[active]; sprite.style.backgroundPosition=`-${(frame%count)*cellW}px -${row*cellH}px`; }
+      function play(){ clearInterval(timer); frame=0; draw(); timer=setInterval(()=>{ frame=(frame+1)%states[active][3]; draw(); }, 260); }
+      states.forEach((state,i)=>{ const b=document.createElement('button'); b.textContent=state[1]; b.onclick=()=>{ active=i; controls.querySelectorAll('button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); play(); }; if(i===0)b.classList.add('active'); controls.append(b); });
+      root.append(article); play();
+    }
+  </script>
+</body>
+</html>

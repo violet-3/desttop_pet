@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+*.zip
+__pycache__/
+*.pyc
+assets/*_clean.webp
+.pet_pos.txt
